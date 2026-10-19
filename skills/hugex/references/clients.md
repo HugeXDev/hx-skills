@@ -1,8 +1,9 @@
 # Connect your assistant to HugeX
 
-Use the canonical URL from **Artifacts → Connect MCP** in HugeX. In Spanish the
-screen is **Conectar MCP**. If no URL is available, ask the environment's
-administrator for it. Never infer it from another account's URL.
+Use the canonical URL from the settings menu (gear icon) → **AI assistants**
+in HugeX (**Asistentes de IA** in Spanish), at `/ai/connect`. If no URL is
+available, ask the environment's administrator for it. Never infer it from
+another account's URL.
 
 Explain each step in the user's language. Before each configuration change or
 installation, describe the change and obtain approval. For file edits, show the

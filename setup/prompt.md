@@ -4,7 +4,8 @@
    HugeX lets them use Workers and build dashboards or mini-apps with their data.
    Identify the assistant client and whether you can operate its settings.
 2. Use the MCP URL supplied in the message. If absent, ask the user to copy it
-   from **Artifacts → Connect MCP** in HugeX (**Conectar MCP** in Spanish).
+   from the settings menu (gear icon) → **AI assistants** in HugeX
+   (**Asistentes de IA** in Spanish), at `/ai/connect`.
    If that screen has no URL, ask them to request it from their administrator.
    Do not guess a URL or ask for passwords or tokens.
 3. Read https://docs.hugex.co/skills/v2/hugex/SKILL.md and its linked references,
