@@ -64,4 +64,6 @@ Remote instruction files can affect future assistant sessions. Before installing
 
 ## License
 
-TBD
+Apache-2.0, see [LICENSE](LICENSE).
+
+The license does not grant rights to the HugeX name or trademarks (section 6).
