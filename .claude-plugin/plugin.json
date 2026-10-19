@@ -1,0 +1,8 @@
+{
+  "name": "hx-skills",
+  "version": "0.1.0",
+  "description": "Agent skills for HugeX. Connect the hugex MCP, use or create a Worker, and connect it to an artifact.",
+  "author": {
+    "name": "HugeX"
+  }
+}

@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Lista las tareas disponibles
+    cmds:
+      - task --list
+
+  manifest:
+    desc: Regenera manifest.json desde skills/
+    cmds:
+      - node scripts/build-manifest.mjs
+
+  check:
+    desc: Comprueba que manifest.json está al día y valida las skills en hx-docs
+    cmds:
+      - node scripts/build-manifest.mjs --check
+      - task -d ../hx-docs skills:check
