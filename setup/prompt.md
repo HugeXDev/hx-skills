@@ -33,7 +33,8 @@
 7. Suggest two or three concrete next requests based on what is available,
    such as finding a Worker, asking an existing Worker a question, or building a
    dashboard with authorized data. Explain any additional permission needed;
-   Worker creation currently takes place on the HugeX canvas.
+   to create or change a Worker, load `hugex-workers` (it needs `workers:write`);
+   the HugeX canvas remains available for building Workers by hand.
 8. If anything fails, explain the observed problem in one sentence and give
    the next step. Do not invent tools, settings, results or a successful
    connection. If you cannot fetch these instructions or connect in this

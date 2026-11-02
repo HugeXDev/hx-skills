@@ -24,6 +24,8 @@ Recommend permissions for the user's goal:
 | --- | --- |
 | Find available Workers | `workers:read` |
 | Ask a Worker to do something | `workers:read`, `workers:run` |
+| Create or change a Worker | `workers:read`, `workers:write`; add `workers:run` for an approved test run |
+| Store an API key or token for a Worker | `secrets:read`, `secrets:write` |
 | Inspect existing dashboards or mini-apps | `artifacts:read` |
 | Build or change a dashboard or mini-app | `artifacts:read`, `artifacts:write` |
 | Connect an existing Worker to a mini-app | `workers:read`, `artifacts:read`, `artifacts:write`; add `workers:run` for an approved execution test |

@@ -48,15 +48,15 @@ For use in the current conversation without installation, use mode `read`. Omit 
 | Skill | Use it for |
 | --- | --- |
 | [hugex](skills/hugex/SKILL.md) | Connect with OAuth, select scopes, and find the right domain |
-| [hugex-worker-artifact](skills/hugex-worker-artifact/SKILL.md) | Discover a Worker and connect it to an artifact from start to finish |
+| [hugex-worker-artifact](skills/hugex-worker-artifact/SKILL.md) | Discover or create a Worker and connect it to an artifact from start to finish |
 | [hugex-artifacts](skills/hugex-artifacts/SKILL.md) | Create, edit, debug, query, and roll back artifacts |
-| [hugex-workers](skills/hugex-workers/SKILL.md) | Discover, inspect, and run Workers; continue MCP conversations |
+| [hugex-workers](skills/hugex-workers/SKILL.md) | Discover, run, create, and edit Workers; manage Vault credentials; continue MCP conversations |
 
 Learn the product in the [HugeX documentation](https://docs.hugex.co/introduction/what-is-hugex/).
 
 ## Versions
 
-Each skill declares its own semantic version and `metadata.hx.minServerVersion` (currently `2.0.0`). Compare that minimum with the server version reported during MCP initialization. The generated manifest records versions and exact file hashes. Documentation publishes the same bytes under the matching MCP contract major; `hugex_guide` serves those files and verifies their hashes. Refresh an older installed skill through the guide before building with a newer server. If the minimum exceeds your server version, resolve the mismatch before following the affected workflow.
+Each skill declares its own semantic version and `metadata.hx.minServerVersion` (`2.0.0` or `2.1.0`, depending on the skill). Compare that minimum with the server version reported during MCP initialization. The generated manifest records versions and exact file hashes. Documentation publishes the same bytes under the matching MCP contract major; `hugex_guide` serves those files and verifies their hashes. Refresh an older installed skill through the guide before building with a newer server. If the minimum exceeds your server version, resolve the mismatch before following the affected workflow.
 
 ## Security
 

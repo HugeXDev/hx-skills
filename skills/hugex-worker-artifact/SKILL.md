@@ -1,15 +1,15 @@
 ---
 name: hugex-worker-artifact
-description: "Connect an existing HugeX Worker to an artifact chat or form, from discovery and an authorized test through grants, publishing, and verification. Load when a user asks for a web app or interface powered by a Worker."
+description: "Connect a HugeX Worker to an artifact chat or form, from discovery (or creation with hugex-workers) and an authorized test through grants, publishing, and verification. Load when a user asks for a web app or interface powered by a Worker."
 metadata:
   hx:
-    version: "0.1.0"
+    version: "0.2.0"
     minServerVersion: "2.0.0"
 ---
 
 # Connect a Worker to an artifact
 
-Use the `hugex` MCP connection with `workers:read`, `artifacts:read`, and `artifacts:write`; request `workers:run` for an authorized execution test. OAuth scopes do not replace object permissions or user authorization for external effects.
+Use the `hugex` MCP connection with `workers:read`, `artifacts:read`, and `artifacts:write`; request `workers:run` for an authorized execution test, and `workers:write` only if the Worker must be created or changed first. OAuth scopes do not replace object permissions or user authorization for external effects.
 
 ## Choose the runtime path
 
@@ -24,7 +24,7 @@ Both paths require an explicit artifact Worker grant. Path B exposes an owner-au
 
 ## End-to-end steps
 
-1. **Find the Worker.** Call `worker_list` and follow `nextPage`, then `worker_get` with `{"flowId":"<RETURNED-ID>"}`. Inspect name, description, and public access. If none fits, MCP cannot create a Worker: create and test it on the product [canvas](https://docs.hugex.co/build/quickstart/), then rediscover it.
+1. **Find the Worker.** Call `worker_list` and follow `nextPage`, then `worker_get` with `{"flowId":"<RETURNED-ID>"}`. Inspect name, description, and public access. If none fits, or the Worker needs changes, load `hugex-workers` to create or edit it through MCP (server 2.1.0 or later, with `workers:write`), then continue here with its `flowId`. The user can also build it on the product [canvas](https://docs.hugex.co/build/quickstart/) and you rediscover it.
 2. **Test the intended operation.** With the user's authorization for its possible effects, call `worker_run` with `flowId` and a nonempty `message` (optional `inputs`). Record the returned text and `sessionId`. This MCP conversation does not continue the artifact's conversation. If the test is not authorized, record it as unverified and resolve authorization before running it.
 3. **Create the artifact.** Call `artifact_create` with `slug`, `title`, and a supported `template`: `blank` for a chat shell, `process-form` for a form, or `dashboard` / `table` for those layouts. These are the only template names; the Worker examples below are code to write afterward. For an existing artifact, read and preserve its files instead.
 4. **Grant access.** As artifact owner, call `artifact_workers` with `{"slug":"<SLUG>","action":"grant","flowId":"<CONFIRMED-ID>"}`. Verify with `action: "list"`. Grant/revoke need `artifacts:write`; list needs `artifacts:read`. Only the owner grants; owner or admin can revoke.

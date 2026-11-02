@@ -2,22 +2,22 @@
   "name": "hx-skills",
   "version": "0.1.0",
   "contract": "2",
-  "minServerVersion": "2.0.0",
+  "minServerVersion": "2.1.0",
   "skills": [
     {
       "name": "hugex",
       "description": "Connect to HugeX with OAuth and choose the right tools and skills for Workers, artifacts, skills, tools, or Knowledge. Load when setting up the hugex MCP server or starting work in an unfamiliar HugeX environment.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "62d0939a398b177f6e96801ca452e8455627957a7aa86d850e995a5fbad1ca2e",
-          "bytes": 5280
+          "sha256": "146cbcfd9b35bfe5e216a6e9c79a7656a4fa15212dc0930a136eac9138bb8669",
+          "bytes": 6131
         },
         {
           "path": "references/clients.md",
-          "sha256": "79a22b0dcadb2dc03499dd0f1dc747a8765d22cc26bd8d809fdfbf2854b7f041",
-          "bytes": 6814
+          "sha256": "88e4645b971e0f00a7938096bfbadbc90fb5f92608258d4eee2a4bf4d7f71319",
+          "bytes": 6999
         }
       ]
     },
@@ -45,25 +45,30 @@
     },
     {
       "name": "hugex-worker-artifact",
-      "description": "Connect an existing HugeX Worker to an artifact chat or form, from discovery and an authorized test through grants, publishing, and verification. Load when a user asks for a web app or interface powered by a Worker.",
-      "version": "0.1.0",
+      "description": "Connect a HugeX Worker to an artifact chat or form, from discovery (or creation with hugex-workers) and an authorized test through grants, publishing, and verification. Load when a user asks for a web app or interface powered by a Worker.",
+      "version": "0.2.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "faafe2df54404e6e75a434103b14670ad6b00b9edea1e8195cebc2e15b878638",
-          "bytes": 4841
+          "sha256": "fdfc465f889ad9c9dade016eda4295488b9a89de02bcebe7881b4558808e8d7c",
+          "bytes": 5087
         }
       ]
     },
     {
       "name": "hugex-workers",
-      "description": "Find, inspect, and run HugeX Workers through MCP, including continuing a conversation with sessionId. Load when a user wants to use an existing Worker or find out how to create one on the canvas.",
-      "version": "0.1.0",
+      "description": "Find, run, create, and edit HugeX Workers through MCP: discovery, graph authoring with versioned edits, activation, test runs, and Vault credentials. Load when a user wants to use an existing Worker or build or change one.",
+      "version": "0.2.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7181814bce7777ade9c6f6416842c1c504cb8af1441e7771722311874a6f415f",
-          "bytes": 3518
+          "sha256": "f6226d7c89224c4ef658798cb3129d193a0eea89a3f219d73958b5c381ab0f1d",
+          "bytes": 8168
+        },
+        {
+          "path": "references/ops.md",
+          "sha256": "4effbf77a750cd69992f6d80fced4ad872b15700d10f59e8009e17ec70c75858",
+          "bytes": 4308
         }
       ]
     }
