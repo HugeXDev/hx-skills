@@ -3,7 +3,7 @@ name: hugex-artifacts
 description: "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, logs, SELECT queries, or browser and server Worker integrations."
 metadata:
   hx:
-    version: "0.1.0"
+    version: "0.2.0"
     minServerVersion: "2.0.0"
 ---
 
@@ -51,7 +51,7 @@ Use `hugex-worker-artifact` for discovery, an authorized test, grants, and publi
 
 - Path A: `window.hx.worker(flowId, options)` streams using visitor permissions. The helper is injected automatically. A private Worker requires visitor login; a public Worker permits anonymous use.
 - Path B: `this.env.HX.ask(flowId, {message, sessionId?, inputs?})` in `server.js` awaits `{text, sessionId}` using the owner's granted access, even for anonymous visitors. Keep `flowId` fixed server-side; scope and validate public input deliberately.
-- Both require `artifact_workers` with `{slug, action: "grant", flowId}` by the artifact owner. List with `action: "list"`; revoke with `action: "revoke"` (owner or admin).
+- Both require `artifact_workers` with `{slug, action: "grant", flowId}` by the artifact owner, one grant per Worker. A "worker_connection_unavailable" warning on grant, list, or write means the environment cannot serve that path; report it instead of working around it. List with `action: "list"`; revoke with `action: "revoke"` (owner or admin).
 - Wait for each turn to finish. Keep returned sessions separate from MCP conversations. Catch failures and show generic errors to visitors.
 
 For product context, see [HugeX concepts](https://docs.hugex.co/introduction/concepts/) and [Worker sharing](https://docs.hugex.co/build/share/).

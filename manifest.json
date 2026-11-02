@@ -24,12 +24,12 @@
     {
       "name": "hugex-artifacts",
       "description": "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, logs, SELECT queries, or browser and server Worker integrations.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "fba9932511fa35a9976a6e77d8c7b4045305d18d891758639e05fda588aeeff6",
-          "bytes": 6244
+          "sha256": "51bc9f72af51a212eccf6c7cd310fd5fae56f87c0cc2f9a1faa11f83c9342d6c",
+          "bytes": 6419
         },
         {
           "path": "references/sqlite.md",
@@ -46,12 +46,12 @@
     {
       "name": "hugex-worker-artifact",
       "description": "Connect a HugeX Worker to an artifact chat or form, from discovery (or creation with hugex-workers) and an authorized test through grants, publishing, and verification. Load when a user asks for a web app or interface powered by a Worker.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "fdfc465f889ad9c9dade016eda4295488b9a89de02bcebe7881b4558808e8d7c",
-          "bytes": 5087
+          "sha256": "b79bafea7edc0c70d44ef8a65322907416a5fc8bf5d426316c40a59c26e13cc4",
+          "bytes": 5808
         }
       ]
     },
