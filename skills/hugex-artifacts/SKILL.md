@@ -1,10 +1,10 @@
 ---
 name: hugex-artifacts
-description: "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, logs, SELECT queries, or browser and server Worker integrations."
+description: "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, logs, usage stats, SELECT queries, or browser and server Worker integrations."
 metadata:
   hx:
-    version: "0.2.0"
-    minServerVersion: "2.0.0"
+    version: "0.3.0"
+    minServerVersion: "2.2.0"
 ---
 
 # Build artifacts
@@ -42,6 +42,8 @@ Use the [SQLite server example](references/sqlite.md) when storing data. Initial
 `artifact_query` accepts `{slug, sql}` with exactly one SELECT. `WITH`, multiple statements, and data mutations are rejected. Use it to verify persisted data; writes belong in validated application API routes.
 
 `artifact_versions` lists versions and the current `activeVersion`. `artifact_rollback` with `{slug, version}` reactivates a previously active code version. **Rollback never reverts SQLite data.** Make migrations backward compatible: avoid destructive changes and add columns with defaults so old code still works.
+
+`artifact_stats` with `{slug, days?}` (1–90, default 30) returns daily usage counters per UTC day, with zero-filled days, `totals`, `lastViewDay`, storage, version, and Worker grant counts. It counts page views (`view`; `view_key` for visits that used the private link key), API calls and server errors (`api`, `api_error`), runtime and browser errors (`error`, `browser_error`), and Worker connections from the browser, from the server, and denied ones (for example, a revoked grant still in use). It does not count unique visitors, and only the last 90 days are kept. Use `artifact_logs` for the error details.
 
 `artifact_settings` changes `group`, `public`, or `rotateKey`. Change audience/public access only when requested; key rotation invalidates old private links and closes open tabs. Artifact deletion is not available through MCP; use the product's Artifacts action menu when requested.
 
