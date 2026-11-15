@@ -56,7 +56,7 @@ Learn the product in the [HugeX documentation](https://docs.hugex.co/introductio
 
 ## Versions
 
-Each skill declares its own semantic version and `metadata.hx.minServerVersion` (`2.0.0` or `2.1.0`, depending on the skill). Compare that minimum with the server version reported during MCP initialization. The generated manifest records versions and exact file hashes. Documentation publishes the same bytes under the matching MCP contract major; `hugex_guide` serves those files and verifies their hashes. Refresh an older installed skill through the guide before building with a newer server. If the minimum exceeds your server version, resolve the mismatch before following the affected workflow.
+Each skill declares its own semantic version and `metadata.hx.minServerVersion` (`2.0.0`, `2.1.0`, or `2.2.0`, depending on the skill). Compare that minimum with the server version reported during MCP initialization. The generated manifest records versions and exact file hashes. Documentation publishes the same bytes under the matching MCP contract major; `hugex_guide` serves those files and verifies their hashes. Refresh an older installed skill through the guide before building with a newer server. If the minimum exceeds your server version, resolve the mismatch before following the affected workflow.
 
 ## Security
 
