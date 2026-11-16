@@ -28,8 +28,8 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "948ec94c17edc61972c02f06bc1537fe37bd646dcee56c8d34468ca43a0d7981",
-          "bytes": 7256
+          "sha256": "f1476a38cb0937c3af81ea51562c114d4531dd477c2ad31527e218f05943ae27",
+          "bytes": 7287
         },
         {
           "path": "references/sqlite.md",
@@ -38,8 +38,8 @@
         },
         {
           "path": "references/worker-patterns.md",
-          "sha256": "ebf2ff77c9e2f076c5e0b01995fd84a45f52e12747a1453d1cfd0acf6394f5d0",
-          "bytes": 7813
+          "sha256": "a8a061280a613cb0fe156964c15c25fee730f803cf46443cae9d358a72f5bfd2",
+          "bytes": 11792
         }
       ]
     },

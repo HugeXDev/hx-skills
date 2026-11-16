@@ -1,6 +1,6 @@
 # Minimal Worker chat and form
 
-Choose one path; these are files to publish after creating an artifact, not extra `artifact_create` template names. Replace `<CONFIRMED-WORKER-ID>` with an ID obtained through `worker_list` / `worker_get`. Have the artifact owner grant that Worker through `artifact_workers` before testing either example. Both examples render responses as text; `window.hx.worker` and `this.env.HX.ask` do not currently provide microphone/audio voice transport (full voice/conversation UIs require `@hugex/ai/client` `useVoice` in a custom app).
+Choose one path; these are files to publish after creating an artifact, not extra `artifact_create` template names. Replace `<CONFIRMED-WORKER-ID>` with an ID obtained through `worker_list` / `worker_get`. Have the artifact owner grant that Worker through `artifact_workers` before testing any example. `window.hx.worker` supports both streaming text (Path A) and full-duplex voice conversations via `client.voice` (Path C); `this.env.HX.ask` (Path B) is text-only.
 
 ## A. Browser streaming chat
 
@@ -221,3 +221,150 @@ export class App extends ArtifactApp {
 For continuing conversations, `ask` accepts `sessionId` and optional `inputs` and returns `{text, sessionId}`. Retain the returned `art-<UUID>` per application user on the server, validate ownership, and allow one turn at a time; never mix visitors' sessions or reuse the MCP conversation. Use SQLite for persistence.
 
 For either path, obtain `artifact_url`, test the chosen interaction, then read `artifact_logs`. Missing grants and inaccessible Workers intentionally produce generic connection/request errors. Publishing files does not prove the Worker interaction succeeded.
+
+## C. Browser voice conversation
+
+Use `template: "blank"` when creating the artifact, then replace these three files. No `server.js` is required.
+
+**Requirements:**
+- The target Worker must have `voiceInput.mode = "conversation"` and a configured `output` (speech model and voice) on its Start node.
+- The visitor must be authenticated, unless `voiceInput.allowPublic` is enabled on the Worker.
+- The artifact owner must grant the Worker through `artifact_workers`.
+
+**Caveats:**
+- Microphone capture requires **HTTPS** (or `localhost`) and explicit browser microphone permission from the visitor.
+- Only **one** `voice` session is supported per `window.hx.worker` socket (`client.voice`).
+
+`artifact.json`:
+
+```json
+{"title":"Voice conversation","libs":[],"theme":"none"}
+```
+
+`index.html`:
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voice conversation</title>
+</head>
+<body>
+  <main>
+    <h1>Voice conversation</h1>
+    <p id="status" role="status">Connecting…</p>
+    <p id="interim" aria-live="polite"></p>
+    <div>
+      <button id="talk" type="button" disabled>Start talking</button>
+      <button id="mute" type="button" disabled>Mute</button>
+    </div>
+    <div id="messages" role="log"></div>
+    <pre id="stream" style="white-space:pre-wrap"></pre>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
+```
+
+`app.js`:
+
+```js
+const FLOW_ID = "<CONFIRMED-WORKER-ID>";
+const statusEl = document.querySelector("#status");
+const interimEl = document.querySelector("#interim");
+const talkBtn = document.querySelector("#talk");
+const muteBtn = document.querySelector("#mute");
+const messagesEl = document.querySelector("#messages");
+const streamEl = document.querySelector("#stream");
+
+let ready = false;
+let active = false;
+let muted = false;
+
+function append(role, text) {
+  const p = document.createElement("p");
+  p.textContent = `${role}: ${text}`;
+  messagesEl.append(p);
+}
+
+function updateControls() {
+  talkBtn.disabled = !ready;
+  talkBtn.textContent = active ? "End call" : "Start talking";
+  muteBtn.disabled = !active;
+  muteBtn.textContent = muted ? "Unmute" : "Mute";
+}
+
+const client = window.hx.worker(FLOW_ID, {
+  onConfig() {
+    ready = true;
+    statusEl.textContent = active ? "In call" : "Ready";
+    updateControls();
+  },
+  onVoiceStatus(state) {
+    active = state !== "idle";
+    if (!active) {
+      muted = false;
+      interimEl.textContent = "";
+    }
+    statusEl.textContent = active ? `Voice: ${state}` : "Ready";
+    updateControls();
+  },
+  onTranscript({ role, text, final }) {
+    if (role !== "user") return;
+    if (!final) {
+      interimEl.textContent = text;
+    } else {
+      interimEl.textContent = "";
+      if (text.trim()) append("You", text.trim());
+    }
+  },
+  onToken(token) {
+    streamEl.textContent += token;
+  },
+  onMessage(text) {
+    append("Worker", text);
+    streamEl.textContent = "";
+  },
+  onVoiceError(message) {
+    active = false;
+    muted = false;
+    statusEl.textContent = `Voice error: ${message}`;
+    updateControls();
+  },
+  onError() {
+    ready = false;
+    active = false;
+    statusEl.textContent = "Worker connection failed. Check access, HTTPS, and grants, then reload.";
+    updateControls();
+  },
+});
+
+talkBtn.addEventListener("click", async () => {
+  if (!ready) return;
+  if (active) {
+    client.voice.stop();
+    active = false;
+    muted = false;
+    statusEl.textContent = "Ready";
+    updateControls();
+  } else {
+    active = true;
+    statusEl.textContent = "Starting microphone…";
+    updateControls();
+    await client.voice.start();
+  }
+});
+
+muteBtn.addEventListener("click", () => {
+  if (!active) return;
+  muted = !muted;
+  client.voice.mute(muted);
+  updateControls();
+});
+
+window.addEventListener("pagehide", () => client.close());
+```
+
+`client.voice` also accepts `onAudioLevel(level)` (RMS `0`–`1` for level meters) and automatically interrupts assistant playback when the visitor speaks over it.
