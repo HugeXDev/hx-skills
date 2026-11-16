@@ -3,8 +3,8 @@ name: hugex-artifacts
 description: "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, logs, usage stats, SELECT queries, or browser and server Worker integrations."
 metadata:
   hx:
-    version: "0.4.0"
-    minServerVersion: "2.2.0"
+    version: "0.5.0"
+    minServerVersion: "2.3.0"
 ---
 
 # Build artifacts
@@ -14,9 +14,9 @@ An artifact is a web app edited without a build step. Publishing a working versi
 ## Read, change, verify
 
 1. Use `artifact_list` to discover existing apps. Create with `artifact_create` using `slug`, `title`, and optional `template` (`blank`, `dashboard`, `table`, or `process-form`). Slugs are immutable, 2–48 lowercase letters/digits/hyphens, starting with a letter or digit; reserved names are rejected.
-2. Call `artifact_read` with `slug`; preserve files and record `activeVersion`. Optional `path` and `version` read a specific file or historical version. For a historical read, `version` identifies those files while `activeVersion` identifies the currently served version.
-3. Call `artifact_write` with `slug`, `files`, `message`, and `baseVersion` equal to the current `activeVersion`. Files are changes: `{path, content}` creates/replaces, `{path, content: null}` deletes. Do not resend unchanged files or send an empty change. This publishes code immediately.
-4. On `conflict`, reread the active files, merge the intended changes, and retry against their version. Never overwrite concurrent edits by merely substituting a newer version ID.
+2. Call `artifact_read` with `slug` to get `activeVersion` and the file listing (`{path, size, hash}`, without content). Read each file you need to inspect or change by passing `path` (one file per call). Optional `version` reads a historical version while `activeVersion` identifies the currently served version.
+3. Call `artifact_write` with `slug`, `files`, `message`, and `baseVersion` equal to the current `activeVersion`. `artifact_write` is a diff: send only changed files (`{path, content}` creates/replaces, `{path, content: null}` deletes; do not resend unchanged files or send an empty change). This publishes code immediately. For large artifacts, split changes across chained `artifact_write` calls using the `activeVersion` returned by each call, because each call has an 8 MiB body limit.
+4. On `conflict`, reread `activeVersion` and the affected files with `artifact_read`, merge the intended changes, and retry against the new `activeVersion`. Never overwrite concurrent edits by merely substituting a newer version ID.
 5. Check the write result for activation, warnings, or failure. A failed server startup leaves the previous working version served. Get the actual browser URL with `artifact_url`; private URLs contain an access key and must stay private. Test the page, then inspect `artifact_logs` (optional `source`: `browser`, `server`, `system`; `limit`: 1–1000). State which browser interactions were actually verified.
 
 ## File and runtime contract
@@ -29,6 +29,7 @@ An artifact is a web app edited without a build step. Publishing a working versi
 | `server.js` | Optional API and persistent state; `import { ArtifactApp } from "./artifact-app.js"` and `export class App extends ArtifactApp` |
 
 - File paths are relative with no leading slash, backslash, or `.` / `..` segment. Browser modules and requests must respect the injected URL base: `fetch("api/items")`, never `fetch("/api/items")`.
+- Limits: up to 7 MB per file, 64 MiB per version, and 2 GB total storage per artifact. Text files only (no binary uploads).
 - **Do not use `localStorage` or `sessionStorage`.** Artifacts in an environment share an origin. Store persistent state in the artifact's SQLite through `server.js`.
 - Only `api/...` routes reach `server.js`; there, `request.url` has a pathname such as `/api/items`. Other routes serve static files. `artifact.json` and `server.js` are not served as public source files.
 - The server has no external network access. Use SQLite and authorized Workers through `this.env.HX`; browser API connections are restricted to the artifact's origin. Images must be artifact files or data/blob URLs.
@@ -39,7 +40,7 @@ An artifact is a web app edited without a build step. Publishing a working versi
 
 Use the [SQLite server example](references/sqlite.md) when storing data. Initialize tables idempotently in `App`'s constructor, bind SQL values with `?`, and validate request input. Do not override runtime methods `__hxQuery` or `__hxHealth`.
 
-`artifact_query` accepts `{slug, sql}` with exactly one SELECT. `WITH`, multiple statements, and data mutations are rejected. Use it to verify persisted data; writes belong in validated application API routes.
+`artifact_query` accepts `{slug, sql, limit?, offset?}` with exactly one SELECT (`WITH`, multiple statements, and data mutations are rejected). It returns `{columns, rows, truncated}` with 500 rows by default (max 1000) and a ~4 MB response cap; paginate with `limit` and `offset` while `truncated` is `true`. Use it to verify persisted data; writes belong in validated application API routes. Artifact owners can also inspect tables and export CSV from the artifact's **Data** tab in the app.
 
 `artifact_versions` lists versions and the current `activeVersion`. `artifact_rollback` with `{slug, version}` reactivates a previously active code version. **Rollback never reverts SQLite data.** Make migrations backward compatible: avoid destructive changes and add columns with defaults so old code still works.
 

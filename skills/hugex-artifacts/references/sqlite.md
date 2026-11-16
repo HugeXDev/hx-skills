@@ -111,10 +111,12 @@ export class App extends ArtifactApp {
 }
 ```
 
-After saving an item in the browser, verify it with `artifact_query`:
+After saving an item in the browser, verify it with `artifact_query` (returns `{columns, rows, truncated}`):
 
 ```json
-{"slug":"<ARTIFACT-SLUG>","sql":"SELECT id, label, created_at FROM item ORDER BY id DESC LIMIT 20"}
+{"slug":"<ARTIFACT-SLUG>","sql":"SELECT id, label, created_at FROM item ORDER BY id DESC","limit":20,"offset":0}
 ```
+
+If `truncated` is `true`, fetch the next page by advancing `offset` (default `limit` is 500, max 1000, with a ~4 MB response cap).
 
 Inspect `artifact_logs` after the interaction. Keep schema changes additive and compatible with older code: rolling back code leaves these rows and the new schema in place. This minimal API follows the artifact's access model; add application-level validation and authorization when the requested data model needs narrower access.
