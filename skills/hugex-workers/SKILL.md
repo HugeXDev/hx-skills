@@ -3,7 +3,7 @@ name: hugex-workers
 description: "Find, run, create, and edit HugeX Workers through MCP: discovery, graph authoring with versioned edits, activation, test runs, and Vault credentials. Load when a user wants to use an existing Worker or build or change one."
 metadata:
   hx:
-    version: "0.2.0"
+    version: "0.3.0"
     minServerVersion: "2.1.0"
 ---
 
@@ -48,7 +48,7 @@ MCP conversations are separate from artifact conversations. Worker execution doe
 Confirm the goal with the user, then:
 
 1. **Learn the nodes.** Call `worker_node_catalog` with `{}` for the summary and shared rules, then with `{"type":"<nodeType>"}` for fields, defaults, outputs, and an example. Field reference: [node reference](https://docs.hugex.co/reference/nodes/).
-2. **Discover what the graph will reference.** Models: `worker_models`. Tools: `tool_list`, then `worker_tool_schema`. Skills for an AI Node: `skill_list` and `skill_get` (not `tool_list`). Knowledge: `memo_list`. Child Workers: `worker_list`. Credentials: `secret_list`.
+2. **Discover what the graph will reference.** Models: `worker_models` (returns language and classifier models; for voice STT/TTS model IDs and voices, see [model reference](https://docs.hugex.co/reference/models/) or configure voice on the canvas). Tools: `tool_list`, then `worker_tool_schema`. Skills for an AI Node: `skill_list` and `skill_get` (not `tool_list`). Knowledge: `memo_list`. Child Workers: `worker_list`. Credentials: `secret_list`.
 3. **Create.** `worker_create` with `name`, optional `description`, and either `template` (`chat` or `extract`) or a full `graph`. The Worker is saved and then activated; the result has `flowId` and `stateVersion`.
 4. **Read before each edit.** `worker_get_graph` returns `graph`, `stateVersion`, `status`, and warnings. The graph is returned as stored, without redaction; never repeat credential values from it.
 5. **Edit.** `worker_edit` with `flowId`, `baseVersion` (the `stateVersion` you just read), and ordered `ops`. Pass `"dryRun":true` first for a non-trivial change: it returns `changes`, `errors`, and `warnings` and writes nothing. Ops and examples: [references/ops.md](references/ops.md). Use `worker_update` to replace the whole graph (also with `baseVersion`) or to change `name` or `description`.
@@ -79,6 +79,10 @@ If a save returns **inline_credentials_detected**, stop and ask the user. Move t
 ### Drafts and child Workers
 
 An inactive Worker is a draft: only its owner, an admin of its organization, or a superadmin can run it, and a Worker node may point to a new inactive child only under the same rule. Existing references are left as they are.
+
+### Voice on Start
+
+`startNode` supports an optional `voiceInput` object with three modes: `dictation` (transcribe into the input), `auto-send` (send each finished utterance), and `conversation` (open microphone, spoken `output`, and barge-in). In `conversation` mode, branches that reach `answerNode` without passing through an AI Node speak `output.fallbackPhrase`. Templates can read `{{ channel }}` (`"text"` or `"voice"`) to keep spoken replies concise. See [references/ops.md](references/ops.md) for an `update_node` example.
 
 ## Troubleshoot
 

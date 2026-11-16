@@ -24,12 +24,12 @@
     {
       "name": "hugex-artifacts",
       "description": "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, logs, usage stats, SELECT queries, or browser and server Worker integrations.",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "b2ef54e4c8e0487694d4cd3665d8550ccf34c6a0702253493d4c7728b7a0c8b4",
-          "bytes": 7048
+          "sha256": "948ec94c17edc61972c02f06bc1537fe37bd646dcee56c8d34468ca43a0d7981",
+          "bytes": 7256
         },
         {
           "path": "references/sqlite.md",
@@ -38,8 +38,8 @@
         },
         {
           "path": "references/worker-patterns.md",
-          "sha256": "e9df61a34658acab6b80a44d33965dc36facff05d721176f2f9505695790371e",
-          "bytes": 7629
+          "sha256": "ebf2ff77c9e2f076c5e0b01995fd84a45f52e12747a1453d1cfd0acf6394f5d0",
+          "bytes": 7813
         }
       ]
     },
@@ -58,17 +58,17 @@
     {
       "name": "hugex-workers",
       "description": "Find, run, create, and edit HugeX Workers through MCP: discovery, graph authoring with versioned edits, activation, test runs, and Vault credentials. Load when a user wants to use an existing Worker or build or change one.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f6226d7c89224c4ef658798cb3129d193a0eea89a3f219d73958b5c381ab0f1d",
-          "bytes": 8168
+          "sha256": "38e6c14387920894f83c8adb5c71dd28cd2fdbb2575c2894b4300decb81c063e",
+          "bytes": 8879
         },
         {
           "path": "references/ops.md",
-          "sha256": "4effbf77a750cd69992f6d80fced4ad872b15700d10f59e8009e17ec70c75858",
-          "bytes": 4308
+          "sha256": "0b8e3ba930d314b493dd4c7cd943af506c9603d737785d47e718d3f99843970f",
+          "bytes": 5365
         }
       ]
     }

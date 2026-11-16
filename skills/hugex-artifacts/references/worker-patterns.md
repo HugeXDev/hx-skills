@@ -1,6 +1,6 @@
 # Minimal Worker chat and form
 
-Choose one path; these are files to publish after creating an artifact, not extra `artifact_create` template names. Replace `<CONFIRMED-WORKER-ID>` with an ID obtained through `worker_list` / `worker_get`. Have the artifact owner grant that Worker through `artifact_workers` before testing either example. Both examples render responses as text.
+Choose one path; these are files to publish after creating an artifact, not extra `artifact_create` template names. Replace `<CONFIRMED-WORKER-ID>` with an ID obtained through `worker_list` / `worker_get`. Have the artifact owner grant that Worker through `artifact_workers` before testing either example. Both examples render responses as text; `window.hx.worker` and `this.env.HX.ask` do not currently provide microphone/audio voice transport (full voice/conversation UIs require `@hugex/ai/client` `useVoice` in a custom app).
 
 ## A. Browser streaming chat
 

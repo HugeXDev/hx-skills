@@ -22,7 +22,7 @@ Rules:
 - New ids match `^[A-Za-z][A-Za-z0-9_-]{0,63}$` and cannot reuse a Start input name. Omit `id` to get one from the type's prefix.
 - `handle` is only for a Classifier source: an option id or one of `__uncertain`, `__blocked`, `__error`. The `source-` prefix is optional. A new Classifier added with `to` needs `to.handle`.
 - Edges never target Start or leave Answer. `insert_node` needs `handle` when two edges join the same pair of nodes.
-- Refs use `{{ nodeId.output }}` for node outputs and bare names (`user_input`, `files`, Start inputs) for Start values. A ref must point to a node that runs before this one.
+- Refs use `{{ nodeId.output }}` for node outputs and bare names (`user_input`, `files`, `channel`, Start inputs) for Start values. A ref must point to a node that runs before this one.
 - Call `worker_node_catalog` with a `type` for each node's fields and defaults before writing `data`.
 
 ## Examples
@@ -72,3 +72,27 @@ After the user stores the value with `secret_set` as `CRM_API_KEY`:
 ```
 
 Never write the credential value itself in `data`.
+
+### Enable voice input and conversation on Start
+
+```json
+{"flowId":"<ID>","baseVersion":7,"ops":[
+  {"op":"update_node","id":"start","data":{"voiceInput":{
+    "enabled":true,
+    "mode":"conversation",
+    "model":"stt_elevenlabs_scribe_v2",
+    "language":"es",
+    "maxSeconds":600,
+    "output":{
+      "model":"tts_elevenlabs_flash_v2_5",
+      "voice":"EXAVITQu4vr4xnSDxMaL",
+      "language":"es",
+      "fallbackPhrase":"No tengo una respuesta para eso.",
+      "fillerPhrase":"Un momento, por favor.",
+      "fillerAfterMs":1500
+    }
+  }}}
+]}
+```
+
+For `dictation` or `auto-send`, omit `output` (`maxSeconds` defaults to `120`, range `5`–`600`; `conversation` defaults to `600`). Optional fields on `voiceInput`: `keyterms` (string array for domain terms) and `allowPublic` (`false` by default). `output.voice` accepts a curated catalog voice ID or a custom voice ID when the selected TTS model supports `customVoiceIds`. Speech provider credentials are managed at the environment level—never put provider API keys in node `data`.
