@@ -1,6 +1,6 @@
 # SQLite-backed artifact API
 
-Use these files when data must survive a reload. Write them through `artifact_write` against a freshly read `activeVersion`. This example uses native browser APIs, so no library is needed.
+Use these files when data must survive a reload. Write them in one `artifact_write` against a freshly read `activeVersion` when the body fits. A follow-up write copies `baseVersion` from that success's `version`. If `index.html`, `app.js`, and `server.js` must appear together and do not fit in one 8 MiB call, publish them with [batch publish](publish.md) when `artifact_publish` is listed; otherwise each chained `artifact_write` is served immediately. This example uses native browser APIs, so no library is needed.
 
 `artifact.json`:
 
