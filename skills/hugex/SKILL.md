@@ -3,7 +3,7 @@ name: hugex
 description: "Connect to HugeX with OAuth and choose the right tools and skills for Workers, artifacts, skills, tools, or Knowledge. Load when setting up the hugex MCP server or starting work in an unfamiliar HugeX environment."
 metadata:
   hx:
-    version: "0.3.0"
+    version: "0.4.0"
     minServerVersion: "2.1.0"
 ---
 
@@ -28,7 +28,9 @@ Workers run in sessions and can use tools and Knowledge.
 | `workers:write` | Create, edit, activate, and deactivate Workers, and read their graphs; requires `workers:read` in the same consent grant. Workers created this way are active |
 | `skills:read` | Read the environment's skill catalog and references |
 | `skills:write` | Create/update skills and their references; requires `skills:read` in the same consent grant |
-| `tools:read` | Read tool summaries without execution configuration or connections |
+| `tools:read` | Read tool summaries (skills included) without credentials or connections |
+| `tools:write` | Create and edit HTTP, connector, and MCP tools, and read their editable spec (server 2.5.0+); requires `tools:read` in the same consent grant |
+| `tools:run` | Run one saved tool directly, with possible external effects and costs (server 2.5.0+); requires `tools:read` in the same consent grant |
 | `memos:read` | Read/search authorized Knowledge |
 | `secrets:read` | List Vault credential names and descriptions, never their values |
 | `secrets:write` | Create and update Vault credentials; values cannot be read back. Requires `secrets:read` in the same consent grant |
@@ -46,7 +48,7 @@ The canonical `/mcp` exposes all authorized domains. A `/mcp/<domain>` endpoint 
 | `artifacts` | Load `hugex-artifacts` to build or edit a web app |
 | Workers + artifacts | Load `hugex-worker-artifact` for the complete connection workflow |
 | `skills` | Use `skill_list`, `skill_get`, and `skill_reference_get`; inspect schemas before editing. Updates and reference mutations need `baseRevision` from a fresh `skill_get`; changes to active skills immediately affect Workers using them |
-| `tools` | Use `tool_list` and `tool_get` for safe catalog discovery |
+| `tools` | Use `tool_list` and `tool_get` for discovery. With `tools:write`: `tool_get` (`view: "authoring"`), `tool_create`, `tool_update` (needs `baseRevision` from `tool_get`; `dryRun` validates without writing) and `tool_mcp_discover` for external MCP servers. With `tools:run`: `tool_run` executes one saved tool without a Worker (`revision` from `tool_get`; `dryRun` previews). Credentials are only `{{ secrets.NAME }}` references; skills are still edited with `skill_*`. Never retry a `tool_run` with status `unknown` before checking the provider |
 | `memos` | Use `memo_list`, `memo_get`, and `memo_search` for authorized Knowledge |
 | `secrets` | Use `secret_list` and `secret_set` for Vault credentials referenced as `{{ secrets.NAME }}`; `hugex-workers` covers their use in a Worker |
 
