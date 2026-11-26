@@ -3,7 +3,7 @@ name: hugex-artifacts
 description: "Create, edit, debug, and roll back HugeX artifacts: web apps with optional SQLite storage and Worker connections. Load for artifact files, version conflicts, batch publishing, logs, usage stats, SELECT queries, or browser and server Worker integrations."
 metadata:
   hx:
-    version: "0.6.0"
+    version: "0.7.1"
     minServerVersion: "2.3.0"
 ---
 
@@ -47,7 +47,7 @@ Use `artifact_publish` when one logical change does not fit in a single `artifac
 
 | File | Contract |
 | --- | --- |
-| `artifact.json` | Required JSON: `{"title":"My app","libs":[],"theme":"none"}` |
+| `artifact.json` | Required JSON: `{"title":"My app","libs":[],"theme":"none"}`. Optional `loading` controls the first-view overlay; see [First view](references/loading.md) |
 | `index.html` | Required entry page; runtime injects base URL, import map, theme, reload client, and Worker helper |
 | `app.js`, `style.css`, other client files | Relative paths, for example `./app.js`; no JSX/TSX compilation or dependency installation |
 | `server.js` | Optional API and persistent state; `import { ArtifactApp } from "./artifact-app.js"` and `export class App extends ArtifactApp` |
@@ -59,6 +59,25 @@ Use `artifact_publish` when one logical change does not fit in a single `artifac
 - The server has no external network access. Use SQLite and authorized Workers through `this.env.HX`; browser API connections are restricted to the artifact's origin. Images must be artifact files or data/blob URLs.
 - For libraries, choose catalog names in `libs`: `preact`, `preact/hooks`, `htm`, `alpinejs`, `daisyui`, `lucide`, `chart.js`, `echarts`, `tabulator-tables`, `@tanstack/table-core`, `luxon`, `sortablejs`, `marked`, `dompurify`. The runtime pins catalog versions and integrity. An unknown name is a warning, not automatic library provisioning: supply an exact-version import map and integrity only when necessary.
 - Tailwind is available. Styles are free; `theme: "none"` is the default and `"hugex"` enables institutional typography. For Markdown, use `DOMPurify.sanitize(marked.parse(text))`; never insert raw model HTML.
+
+## First view
+
+`loading` on `artifact.json` is optional. Without it the effective mode is `auto`, the overlay is the generic one, and Tailwind plus catalog scripts stay blocking (no `defer`). `defer` applies only when `loading` is declared and its mode is not `none`. An invalid `loading` value on a version that is already published is ignored: `title`, `libs`, and `theme` still apply, visitors see the generic overlay, and that version can still be rolled back. A write or publish of new content still rejects invalid `loading`. `page` is opt-in: a `loading.html` that exists but is not named in the manifest is served as a normal file.
+
+```json
+{"title":"My app","libs":[],"theme":"none","loading":{"mode":"auto","page":"loading.html"}}
+```
+
+```html
+<main>
+  <p>Loading…</p>
+  <img src="./mark.svg" alt="">
+</main>
+```
+
+`mode` is `auto`, `manual`, or `none`. `page` must be a relative path ending in `.html`, and it cannot be `index.html`, `server.js`, `artifact.json`, or anything under `__hx/`. Its UTF-8 must be at most 32 768 bytes. The runtime mounts that HTML in an iframe with an empty `sandbox` (no scripts, no forms, no same origin). Images are a relative URL with no `crossorigin` attribute, or a `data:` URL.
+
+`hx.ready()` removes the overlay. Call it after the first useful render in a SPA; an earlier call is kept and the overlay is not shown. `auto` also removes it on `load`, with a 10 s cap that warns `load not reached in 10s (auto)`. `manual` waits only for `hx.ready()`, with a 15 s cap that warns `hx.ready() not called (manual)`. `none` has no overlay and no timer. Read those warnings with `artifact_logs`. Path checks, the byte cap, and a longer page are in [First view](references/loading.md).
 
 ## SQLite, versions, and access
 
@@ -72,7 +91,13 @@ Send `{slug, version, baseVersion?}`. `version` is the history id to reactivate.
 
 `artifact_logs` reads recent messages, newest first. Filters are optional and combine: `source` (`browser`, `server`, `system`), `level` (`debug`, `info`, `warn`, `error`), `version` (a version id), and `limit` (1–1000). The response is `{slug, logs, nextCursor}`. Each log has `ts`, `source`, `level`, `message`, and `version`. When `nextCursor` is a positive decimal string, call again with the same filters and `cursor` set to that value to load the next older page. `nextCursor: null` ends the list. Copy `cursor` from `nextCursor`; do not build one from `ts`. Changing filters starts a new first page, so drop the previous cursor. Invalid `limit` or `cursor` values are rejected. To find an error behind a long log, call `artifact_logs` with `{slug, level:"error", version:"ccc", limit:100}` and follow `nextCursor` until it is null. A 2.3 server may omit `level`, `version`, and `cursor` from the `artifact_logs` inputs in `tools/list`. Send only inputs that are listed. If `level` or `version` is absent, that filter is not available. If `cursor` is absent, cursor pagination is not available; read the first page with `slug` and the inputs the schema still offers, such as `source` and `limit`.
 
-`artifact_stats` with `{slug, days?}` (1–90, default 30) returns daily usage counters per UTC day, with zero-filled days, `totals`, `lastViewDay`, storage, version, and Worker grant counts. It counts page views (`view`; `view_key` for visits that used the private link key), API calls and server errors (`api`, `api_error`), runtime and browser errors (`error`, `browser_error`), and Worker connections from the browser, from the server, and denied ones (for example, a revoked grant still in use). It does not count unique visitors, and only the last 90 days are kept. Use `artifact_logs` with `level: "error"` for the error details.
+`artifact_stats` with `{slug, days?}` (1–90, default 30) returns daily usage per UTC day, with zero-filled days, `totals`, `lastViewDay`, storage, version, and Worker grant counts. Only the last 90 days are kept. If `dimensions` is absent, this server has not shipped dimension capture; use the counters it does return.
+
+A view is a GET of a document after access is allowed. HEAD, POST, prefetch, prerender, and iframe do not count. `view` and `view_key` (a visit that used the private link key) exclude bots. Bots increment `view_bot` and do not move `view`, `view_key`, or `lastViewDay`. Days from before this change counted bots inside `view`. Also counted: API calls and server errors (`api`, `api_error`), runtime and browser errors (`error`, `browser_error`), and Worker connections from the browser, from the server, and denied ones (for example, a revoked grant still in use).
+
+`dimensions` holds, for the range, the top 10 values of `country`, `region`, `device`, `browser`, `os`, `referrer`, and `lang` (count descending, then value ascending), plus an `other` row for the rest. A referrer whose hostname is an IPv4 or IPv6 literal is stored as `other`. `dimensionsSince` is the first day with any dimension, or null. On each series day, `coverage.dims` is true when at least one view carried a valid visit header, and `coverage.uniques` is true when at least one non-bot view with a usable IP was counted. Earlier days stay false: a zero there is not "no traffic".
+
+`uniques` is the approximate number of distinct visitors that UTC day (capped at 20 000, which sets that day's `uniquesCapped`; the root flag is the OR of the range). `totals.uniques` sums those days and does not deduplicate across days. The identifier is a daily temporary hash of IP and User-Agent with a salt that rotates at the next 00:00 UTC. Statistics do not persist IP or User-Agent. Request headers, including IP and User-Agent, still reach `server.js`. What the artifact's own code writes to logs is the author's responsibility. A view with no IP is left out of uniques. Use `artifact_logs` with `level: "error"` for the error details.
 
 `artifact_settings` changes `group`, `public`, or `rotateKey`. Change audience/public access only when requested; key rotation invalidates old private links and closes open tabs. Artifact deletion is not available through MCP; use the product's Artifacts action menu when requested.
 
