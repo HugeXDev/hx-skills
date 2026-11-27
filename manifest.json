@@ -2,7 +2,7 @@
   "name": "hx-skills",
   "version": "0.1.0",
   "contract": "2",
-  "minServerVersion": "2.3.0",
+  "minServerVersion": "2.5.0",
   "skills": [
     {
       "name": "hugex",
@@ -68,12 +68,12 @@
     {
       "name": "hugex-workers",
       "description": "Find, run, create, and edit HugeX Workers through MCP: discovery, graph authoring with versioned edits, activation, test runs, and Vault credentials. Load when a user wants to use an existing Worker or build or change one.",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "38e6c14387920894f83c8adb5c71dd28cd2fdbb2575c2894b4300decb81c063e",
-          "bytes": 8879
+          "sha256": "9410e0f4c76a72b794bab2eec46983d0273ee1cc4532527a01ccbd93884f32c7",
+          "bytes": 9950
         },
         {
           "path": "references/ops.md",
